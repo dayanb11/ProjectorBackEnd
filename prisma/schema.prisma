@@ -1,0 +1,387 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  relationMode = "foreignKeys"
+}
+
+model StatusValue {
+  status_key    String @id @db.VarChar(50) @map("status_key")
+  display_label String @db.Text @map("display_label")
+  
+  // Audit fields
+  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
+  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
+  created_by String? @db.VarChar(50) @map("created_by")
+  updated_by String? @db.VarChar(50) @map("updated_by")
+  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
+  
+  // Relations
+  programs Program[]
+  
+  @@map("status_value")
+}
+
+model StructureValue {
+  structure_key String @id @db.VarChar(50) @map("structure_key")
+  display_label String @db.Text @map("display_label")
+  
+  // Audit fields
+  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
+  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
+  created_by String? @db.VarChar(50) @map("created_by")
+  updated_by String? @db.VarChar(50) @map("updated_by")
+  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
+  
+  @@map("structure_value")
+}
+
+model Permissions {
+  permission_key String @id @db.VarChar(50) @map("permission_key")
+  setting        String @db.Text @map("setting")
+  
+  // Audit fields
+  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
+  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
+  created_by String? @db.VarChar(50) @map("created_by")
+  updated_by String? @db.VarChar(50) @map("updated_by")
+  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
+  
+  @@map("permissions")
+}
+
+model ComplexityEstimate {
+  id               Int @id @default(autoincrement()) @map("id")
+  estimate_level_1 String? @db.Text @map("estimate_level_1")
+  estimate_level_2 String? @db.Text @map("estimate_level_2")
+  estimate_level_3 String? @db.Text @map("estimate_level_3")
+  
+  // Audit fields
+  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
+  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
+  created_by String? @db.VarChar(50) @map("created_by")
+  updated_by String? @db.VarChar(50) @map("updated_by")
+  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
+  
+  @@map("complexity_estimate")
+}
+
+model AcceptanceOption {
+  year_key         String @id @db.VarChar(10) @map("year_key")
+  acceptance_code  AcceptanceCode @map("acceptance_code")
+  code_meaning     String @db.Text @map("code_meaning")
+  extended_meaning String @db.Text @map("extended_meaning")
+  
+  // Audit fields
+  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
+  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
+  created_by String? @db.VarChar(50) @map("created_by")
+  updated_by String? @db.VarChar(50) @map("updated_by")
+  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
+  
+  @@map("acceptance_option")
+}
+
+model OrganizationalRole {
+  role_id          Int    @id @default(autoincrement()) @map("role_id")
+  role_description String @db.Text @map("role_description")
+  role_permissions String @db.Text @map("role_permissions")
+  
+  // Audit fields
+  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
+  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
+  created_by String? @db.VarChar(50) @map("created_by")
+  updated_by String? @db.VarChar(50) @map("updated_by")
+  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
+  
+  // Relations
+  workers Workers[]
+  
+  @@map("organizational_role")
+}
+
+model Division {
+  division_id   Int     @id @default(autoincrement()) @map("division_id")
+  division_name String  @db.VarChar(255) @map("division_name")
+  is_internal   Boolean @default(false) @db.Boolean @map("is_internal")
+  
+  // Audit fields
+  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
+  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
+  created_by String? @db.VarChar(50) @map("created_by")
+  updated_by String? @db.VarChar(50) @map("updated_by")
+  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
+  
+  // Relations
+  departments Department[]
+  workers     Workers[]
+  
+  @@index([division_name])
+  @@map("division")
+}
+
+model Department {
+  department_id   Int    @id @default(autoincrement()) @map("department_id")
+  department_name String @db.VarChar(255) @map("department_name")
+  division_id     Int    @map("division_id")
+  
+  // Audit fields
+  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
+  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
+  created_by String? @db.VarChar(50) @map("created_by")
+  updated_by String? @db.VarChar(50) @map("updated_by")
+  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
+  
+  // Relations
+  division Division @relation(fields: [division_id], references: [division_id], onUpdate: Cascade, onDelete: Restrict)
+  workers  Workers[]
+  programs Program[]
+  
+  @@index([division_id])
+  @@map("department")
+}
+
+model ProcurementTeam {
+  team_id   Int    @id @default(autoincrement()) @map("team_id")
+  team_name String @db.VarChar(255) @map("team_name")
+  
+  // Audit fields
+  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
+  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
+  created_by String? @db.VarChar(50) @map("created_by")
+  updated_by String? @db.VarChar(50) @map("updated_by")
+  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
+  
+  // Relations
+  workers Workers[]
+  
+  @@map("procurement_team")
+}
+
+model ActivityPool {
+  activity_id   Int    @id @default(autoincrement()) @map("activity_id")
+  activity_name String @db.VarChar(255) @map("activity_name")
+  activity_aids String @db.Text @map("activity_aids")
+  
+  // Audit fields
+  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
+  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
+  created_by String? @db.VarChar(50) @map("created_by")
+  updated_by String? @db.VarChar(50) @map("updated_by")
+  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
+  
+  // Relations
+  engagement_type_processes EngagementTypeProcess[]
+  program_tasks             ProgramTask[]
+  
+  @@map("activity_pool")
+}
+
+model EngagementType {
+  engagement_type_id   Int    @id @default(autoincrement()) @map("engagement_type_id")
+  engagement_type_name String @db.VarChar(255) @map("engagement_type_name")
+  
+  // Audit fields
+  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
+  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
+  created_by String? @db.VarChar(50) @map("created_by")
+  updated_by String? @db.VarChar(50) @map("updated_by")
+  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
+  
+  // Relations
+  engagement_type_processes EngagementTypeProcess[]
+  programs                  Program[]
+  
+  @@map("engagement_type")
+}
+
+model EngagementTypeProcess {
+  engagement_type_id Int @map("engagement_type_id")
+  station_id         Int @db.SmallInt @map("station_id")
+  activity_id        Int @map("activity_id")
+  
+  // Audit fields
+  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
+  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
+  created_by String? @db.VarChar(50) @map("created_by")
+  updated_by String? @db.VarChar(50) @map("updated_by")
+  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
+  
+  // Relations
+  engagement_type EngagementType @relation(fields: [engagement_type_id], references: [engagement_type_id], onUpdate: Cascade, onDelete: Restrict)
+  activity        ActivityPool   @relation(fields: [activity_id], references: [activity_id], onUpdate: Cascade, onDelete: Restrict)
+  
+  @@id([engagement_type_id, station_id])
+  @@index([engagement_type_id])
+  @@index([activity_id])
+  @@map("engagement_type_process")
+}
+
+model Domain {
+  domain_id   Int    @id @default(autoincrement()) @map("domain_id")
+  domain_name String @db.VarChar(255) @map("domain_name")
+  
+  // Audit fields
+  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
+  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
+  created_by String? @db.VarChar(50) @map("created_by")
+  updated_by String? @db.VarChar(50) @map("updated_by")
+  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
+  
+  // Relations
+  programs Program[]
+  
+  @@map("domain")
+}
+
+model Workers {
+  worker_id            Int     @id @default(autoincrement()) @map("worker_id")
+  employee_id          String  @unique @db.VarChar(50) @map("employee_id")
+  full_name            String  @db.VarChar(255) @map("full_name")
+  job_description      String  @db.Text @map("job_description")
+  division_id          Int     @map("division_id")
+  department_id        Int     @map("department_id")
+  team_id              Int     @map("team_id")
+  role_id              Int     @map("role_id")
+  password_hash        String  @db.Text @map("password_hash")
+  available_work_days  Int     @default(5) @db.SmallInt @map("available_work_days")
+  email                String  @db.VarChar(255) @map("email")
+  
+  // Audit fields
+  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
+  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
+  created_by String? @db.VarChar(50) @map("created_by")
+  updated_by String? @db.VarChar(50) @map("updated_by")
+  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
+  
+  // Relations
+  division         Division        @relation(fields: [division_id], references: [division_id], onUpdate: Cascade, onDelete: Restrict)
+  department       Department      @relation(fields: [department_id], references: [department_id], onUpdate: Cascade, onDelete: Restrict)
+  team             ProcurementTeam @relation(fields: [team_id], references: [team_id], onUpdate: Cascade, onDelete: Restrict)
+  role             OrganizationalRole @relation(fields: [role_id], references: [role_id], onUpdate: Cascade, onDelete: Restrict)
+  
+  requested_programs Program[] @relation("RequesterWorker")
+  assigned_programs  Program[] @relation("AssigneeWorker")
+  reported_tasks     ProgramTask[]
+  refresh_tokens     RefreshToken[]
+  
+  @@index([employee_id])
+  @@index([department_id])
+  @@index([team_id])
+  @@index([role_id])
+  @@index([email])
+  @@map("workers")
+}
+
+model Program {
+  program_id              Int             @id @default(autoincrement()) @map("program_id")
+  work_year               Int             @db.SmallInt @map("work_year")
+  required_quarter        String          @db.VarChar(7) @map("required_quarter")
+  title                   String          @unique @db.VarChar(500) @map("title")
+  description             String          @db.Text @map("description")
+  requester_worker_id     Int             @map("requester_worker_id")
+  department_id           Int             @map("department_id")
+  domain_id               Int             @map("domain_id")
+  estimated_amount        Decimal         @db.Numeric(18, 2) @map("estimated_amount")
+  currency                String          @db.VarChar(3) @map("currency")
+  possible_suppliers      String          @db.Text @map("possible_suppliers")
+  notes                   String?         @db.Text @map("notes")
+  planning_source         PlanningSource  @map("planning_source")
+  complexity_level        Int             @db.SmallInt @map("complexity_level")
+  engagement_type_id      Int             @map("engagement_type_id")
+  status_key              String          @db.VarChar(50) @map("status_key")
+  assignee_worker_id      Int?            @map("assignee_worker_id")
+  start_required_month    Int?            @db.SmallInt @map("start_required_month")
+  planning_comment        String?         @db.Text @map("planning_comment")
+  assignee_comment        String?         @db.Text @map("assignee_comment")
+  last_updated            DateTime        @default(now()) @db.Timestamptz(6) @map("last_updated")
+  
+  // Audit fields
+  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
+  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
+  created_by String? @db.VarChar(50) @map("created_by")
+  updated_by String? @db.VarChar(50) @map("updated_by")
+  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
+  
+  // Relations
+  requester_worker Workers        @relation("RequesterWorker", fields: [requester_worker_id], references: [worker_id], onUpdate: Cascade, onDelete: Restrict)
+  assignee_worker  Workers?       @relation("AssigneeWorker", fields: [assignee_worker_id], references: [worker_id], onUpdate: Cascade, onDelete: Restrict)
+  department       Department     @relation(fields: [department_id], references: [department_id], onUpdate: Cascade, onDelete: Restrict)
+  domain           Domain         @relation(fields: [domain_id], references: [domain_id], onUpdate: Cascade, onDelete: Restrict)
+  engagement_type  EngagementType @relation(fields: [engagement_type_id], references: [engagement_type_id], onUpdate: Cascade, onDelete: Restrict)
+  status           StatusValue    @relation(fields: [status_key], references: [status_key], onUpdate: Cascade, onDelete: Restrict)
+  
+  program_tasks ProgramTask[]
+  
+  @@index([status_key])
+  @@index([domain_id])
+  @@index([engagement_type_id])
+  @@index([department_id])
+  @@index([assignee_worker_id])
+  @@index([requester_worker_id])
+  @@map("program")
+}
+
+model ProgramTask {
+  program_id        Int       @map("program_id")
+  station_id        Int       @db.SmallInt @map("station_id")
+  activity_id       Int       @map("activity_id")
+  is_last_station   Boolean   @default(false) @db.Boolean @map("is_last_station")
+  completed_on      DateTime? @db.Timestamptz(6) @map("completed_on")
+  reference         String?   @db.Text @map("reference")
+  station_note      String?   @db.Text @map("station_note")
+  reporting_user_id Int       @map("reporting_user_id")
+  last_updated      DateTime  @default(now()) @db.Timestamptz(6) @map("last_updated")
+  
+  // Audit fields
+  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
+  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
+  created_by String? @db.VarChar(50) @map("created_by")
+  updated_by String? @db.VarChar(50) @map("updated_by")
+  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
+  
+  // Relations
+  program         Program      @relation(fields: [program_id], references: [program_id], onUpdate: Cascade, onDelete: Restrict)
+  activity        ActivityPool @relation(fields: [activity_id], references: [activity_id], onUpdate: Cascade, onDelete: Restrict)
+  reporting_user  Workers      @relation(fields: [reporting_user_id], references: [worker_id], onUpdate: Cascade, onDelete: Restrict)
+  
+  @@id([program_id, station_id])
+  @@index([program_id])
+  @@index([activity_id])
+  @@map("program_task")
+}
+
+model RefreshToken {
+  id         String   @id @default(uuid()) @map("id")
+  token_hash String   @unique @db.Text @map("token_hash")
+  worker_id  Int      @map("worker_id")
+  jti        String   @unique @db.VarChar(36) @map("jti")
+  expires_at DateTime @db.Timestamptz(6) @map("expires_at")
+  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
+  
+  // Relations
+  worker Workers @relation(fields: [worker_id], references: [worker_id], onUpdate: Cascade, onDelete: Cascade)
+  
+  @@index([worker_id])
+  @@index([expires_at])
+  @@map("refresh_token")
+}
+
+enum AcceptanceCode {
+  Plan
+  Late
+  Block
+  Finish
+}
+
+enum PlanningSource {
+  Annual
+  Unplanned
+  CarryOver
+}

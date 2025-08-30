@@ -1,0 +1,106 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: projector-postgres
+    environment:
+      POSTGRES_DB: projector_db
+      POSTGRES_USER: projector_user
+      POSTGRES_PASSWORD: projector_password
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - projector-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U projector_user -d projector_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend Application
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: projector-backend
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: "postgresql://projector_user:projector_password@postgres:5432/projector_db?sslmode=prefer"
+      JWT_SECRET: "${JWT_SECRET}"
+      REFRESH_SECRET: "${REFRESH_SECRET}"
+      ACCESS_TOKEN_TTL: "15m"
+      REFRESH_TOKEN_TTL: "7d"
+      CORS_ALLOWED_ORIGINS: "${CORS_ALLOWED_ORIGINS:-http://localhost:5173}"
+      PUBLIC_URL: "${PUBLIC_URL:-http://localhost:3000}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+    ports:
+      - "3000:3000"
+    networks:
+      - projector-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    volumes:
+      - ./logs:/app/logs
+
+  # Optional: PgBouncer for connection pooling
+  pgbouncer:
+    image: pgbouncer/pgbouncer:latest
+    container_name: projector-pgbouncer
+    environment:
+      DATABASES_HOST: postgres
+      DATABASES_PORT: 5432
+      DATABASES_USER: projector_user
+      DATABASES_PASSWORD: projector_password
+      DATABASES_DBNAME: projector_db
+      POOL_MODE: transaction
+      SERVER_RESET_QUERY: DISCARD ALL
+      MAX_CLIENT_CONN: 25
+      DEFAULT_POOL_SIZE: 5
+      MIN_POOL_SIZE: 0
+      RESERVE_POOL_SIZE: 0
+      RESERVE_POOL_TIMEOUT: 5
+      MAX_DB_CONNECTIONS: 0
+      MAX_USER_CONNECTIONS: 0
+      SERVER_ROUND_ROBIN: 1
+      IGNORE_STARTUP_PARAMETERS: extra_float_digits
+      SERVER_IDLE_TIMEOUT: 600
+      SERVER_LIFETIME: 3600
+      CLIENT_IDLE_TIMEOUT: 0
+      CLIENT_LOGIN_TIMEOUT: 60
+      AUTODB_IDLE_TIMEOUT: 3600
+      DNS_MAX_TTL: 15
+      DNS_NXDOMAIN_TTL: 15
+      DNS_ZONE_CHECK_PERIOD: 0
+      RESOLV_CONF: /etc/resolv.conf
+    ports:
+      - "6543:5432"
+    networks:
+      - projector-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+networks:
+  projector-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
