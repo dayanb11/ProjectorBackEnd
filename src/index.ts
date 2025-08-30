@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { createApp } from './app';
 import { environment } from './infrastructure/config/environment';
 import { initializeDatabase, validateDatabaseSchema } from './infrastructure/startup/database';
