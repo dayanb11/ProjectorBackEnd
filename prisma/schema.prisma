@@ -288,7 +288,7 @@ model Program {
   requester_worker_id     Int             @map("requester_worker_id")
   department_id           Int             @map("department_id")
   domain_id               Int             @map("domain_id")
-  estimated_amount        Decimal         @db.Numeric(18, 2) @map("estimated_amount")
+  estimated_amount        Decimal         @db.Decimal(18, 2) @map("estimated_amount")
   currency                String          @db.VarChar(3) @map("currency")
   possible_suppliers      String          @db.Text @map("possible_suppliers")
   notes                   String?         @db.Text @map("notes")
