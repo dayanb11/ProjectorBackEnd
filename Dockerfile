@@ -23,7 +23,6 @@ RUN npm ci
 FROM build-deps AS builder
 WORKDIR /app
 COPY . .
-COPY --from=deps /app/node_modules ./node_modules
 
 # Generate Prisma client
 RUN npx prisma generate
