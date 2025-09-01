@@ -6,7 +6,7 @@ services:
     image: postgres:16-alpine
     container_name: projector-postgres
     environment:
-      POSTGRES_DB: projector_db
+      POSTGRES_DB: ProjectorDb
       POSTGRES_USER: projector_user
       POSTGRES_PASSWORD: projector_password
       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
@@ -19,7 +19,7 @@ services:
       - projector-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U projector_user -d projector_db"]
+      test: ["CMD-SHELL", "pg_isready -U projector_user -d ProjectorDb"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -33,7 +33,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      DATABASE_URL: "postgresql://projector_user:projector_password@postgres:5432/projector_db?sslmode=prefer"
+      DATABASE_URL: "postgresql://projector_user:projector_password@postgres:5432/ProjectorDb?sslmode=prefer"
       JWT_SECRET: "${JWT_SECRET}"
       REFRESH_SECRET: "${REFRESH_SECRET}"
       ACCESS_TOKEN_TTL: "15m"
@@ -67,7 +67,7 @@ services:
       DATABASES_PORT: 5432
       DATABASES_USER: projector_user
       DATABASES_PASSWORD: projector_password
-      DATABASES_DBNAME: projector_db
+      DATABASES_DBNAME: ProjectorDb
       POOL_MODE: transaction
       SERVER_RESET_QUERY: DISCARD ALL
       MAX_CLIENT_CONN: 25

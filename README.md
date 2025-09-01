@@ -64,7 +64,7 @@ cp .env.example .env
 
 2. Update the `.env` file with your configuration:
 ```env
-DATABASE_URL="postgresql://username:password@localhost:5432/projector_db?sslmode=require"
+DATABASE_URL="postgresql://username:password@localhost:5432/ProjectorDb?sslmode=require"
 JWT_SECRET="your-super-secure-jwt-secret-at-least-32-characters-long"
 REFRESH_SECRET="your-super-secure-refresh-secret-at-least-32-characters-long-and-different"
 ```
