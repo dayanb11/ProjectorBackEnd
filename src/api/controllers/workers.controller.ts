@@ -16,13 +16,13 @@ export class WorkersController {
     try {
       const { page, limit, sortBy, sortOrder } = req.query as PaginationQuery;
       const filter = {
-        employee_id: req.query.employee_id as string,
-        full_name: req.query.full_name as string,
+        employee_id: req.query.employee_id as string | undefined,
+        full_name: req.query.full_name as string | undefined,
         division_id: req.query.division_id ? Number(req.query.division_id) : undefined,
         department_id: req.query.department_id ? Number(req.query.department_id) : undefined,
         team_id: req.query.team_id ? Number(req.query.team_id) : undefined,
         role_id: req.query.role_id ? Number(req.query.role_id) : undefined,
-        email: req.query.email as string,
+        email: req.query.email as string | undefined,
       };
 
       const result = await this.workersService.getWorkers(

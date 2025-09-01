@@ -16,16 +16,16 @@ export class ProgramsController {
     try {
       const { page, limit, sortBy, sortOrder } = req.query as PaginationQuery;
       const filter = {
-        work_year: req.query.work_year ? Number(req.query.work_year) : undefined,
-        required_quarter: req.query.required_quarter as string,
-        title: req.query.title as string,
-        status_key: req.query.status_key as string,
+        work_year: req.query.work_year ? Number(req.query.work_year) : undefined as number | undefined,
+        required_quarter: req.query.required_quarter as string | undefined,
+        title: req.query.title as string | undefined,
+        status_key: req.query.status_key as string | undefined,
         domain_id: req.query.domain_id ? Number(req.query.domain_id) : undefined,
         engagement_type_id: req.query.engagement_type_id ? Number(req.query.engagement_type_id) : undefined,
         department_id: req.query.department_id ? Number(req.query.department_id) : undefined,
         assignee_worker_id: req.query.assignee_worker_id ? Number(req.query.assignee_worker_id) : undefined,
         requester_worker_id: req.query.requester_worker_id ? Number(req.query.requester_worker_id) : undefined,
-        planning_source: req.query.planning_source as string,
+        planning_source: req.query.planning_source as string | undefined,
         complexity_level: req.query.complexity_level ? Number(req.query.complexity_level) : undefined,
       };
 
