@@ -3,13 +3,6 @@ import promClient from 'prom-client';
 // Create a Registry to register the metrics
 const register = new promClient.Registry();
 
-// Add default metrics
-promClient.collectDefaultMetrics({
-  register,
-  prefix: 'projector_backend_',
-  eventLoopLagMonitor: false,
-});
-
 // Custom metrics
 export const httpRequestDuration = new promClient.Histogram({
   name: 'projector_backend_http_request_duration_seconds',
