@@ -7,7 +7,7 @@ const register = new promClient.Registry();
 promClient.collectDefaultMetrics({
   register,
   prefix: 'projector_backend_',
-  eventLoopLag: false,
+  disabledMetrics: ['eventLoopLag'],
 });
 
 // Custom metrics
