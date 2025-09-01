@@ -13,11 +13,13 @@
     "typecheck": "tsc --noEmit",
     "test": "jest",
     "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "prisma:generate": "prisma generate",
-    "prisma:push": "prisma db push",
-    "prisma:seed": "tsx src/infrastructure/db/seed.ts",
-    "db:setup": "npm run prisma:generate && npm run prisma:push",
-    "db:seed": "npm run prisma:seed"
+    "db:setup": "npm run prisma:generate",
+    "docker:build": "docker build -t projector-backend .",
+    "docker:run": "docker-compose up -d",
+    "docker:stop": "docker-compose down",
+    "docker:logs": "docker-compose logs -f backend"
   },
   "keywords": [
     "backend",

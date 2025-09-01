@@ -1,29 +1,9 @@
 import { DatabaseClient } from '../db/client';
 import { logger } from '../logging/logger';
-import { exec } from 'child_process';
-import { promisify } from 'util';
-
-const execAsync = promisify(exec);
 
 export async function initializeDatabase(): Promise<void> {
   try {
     logger.info('Initializing database...');
-
-    // Generate Prisma client
-    logger.info('Generating Prisma client...');
-    await execAsync('npx prisma generate');
-    logger.info('Prisma client generated successfully');
-
-    // Push schema to database
-    logger.info('Pushing schema to database...');
-    const { stdout, stderr } = await execAsync('npx prisma db push --accept-data-loss');
-    
-    if (stderr && !stderr.includes('warnings')) {
-      logger.error('Database push failed', { stderr });
-      throw new Error(`Database push failed: ${stderr}`);
-    }
-    
-    logger.info('Database schema pushed successfully', { stdout });
 
     // Connect to database
     await DatabaseClient.connect();
@@ -44,7 +24,7 @@ export async function validateDatabaseSchema(): Promise<void> {
     // Test basic connectivity and schema
     await client.$queryRaw`SELECT 1 as test`;
     
-    // Validate that all required tables exist
+    // Validate that all required tables exist (tables are pre-created)
     const tables = await client.$queryRaw<Array<{ table_name: string }>>`
       SELECT table_name 
       FROM information_schema.tables 

@@ -21,9 +21,6 @@ async function startServer(): Promise<void> {
     await initializeDatabase();
     await validateDatabaseSchema();
 
-    // Validate password security
-    await validatePasswordSecurity();
-
     // Create Express app
     const app = createApp();
 
