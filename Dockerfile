@@ -24,6 +24,14 @@ FROM build-deps AS builder
 WORKDIR /app
 COPY . .
 
+# Build frontend first
+WORKDIR /app/frontend
+RUN npm ci
+RUN npm run build
+
+# Build backend
+WORKDIR /app
+
 # Generate Prisma client
 RUN npx prisma generate
 
@@ -40,6 +48,7 @@ RUN adduser --system --uid 1001 nodejs
 
 # Copy built application
 COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
+COPY --from=builder --chown=nodejs:nodejs /app/frontend/build ./frontend/build
 COPY --from=builder --chown=nodejs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nodejs:nodejs /app/package.json ./package.json
 COPY --from=builder --chown=nodejs:nodejs /app/prisma ./prisma

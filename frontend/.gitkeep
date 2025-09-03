@@ -1,0 +1,23 @@
+# Place your React frontend files in this directory
+
+## Integration Steps:
+
+1. Copy your React project files into the `frontend/` directory
+2. Make sure your React app builds to `frontend/build/` directory
+3. Update your React app's API calls to use the backend URL
+4. Run `npm run start:fullstack` to build and serve both frontend and backend
+
+## Frontend Configuration:
+
+Your React app should make API calls to:
+- Base URL: `http://localhost:4000/api`
+- Auth endpoints: `/api/auth/login`, `/api/auth/refresh`, `/api/auth/logout`
+- Workers endpoints: `/api/workers`
+- Programs endpoints: `/api/programs`
+
+## Environment Variables for React:
+
+Create a `.env` file in your React app with:
+```
+REACT_APP_API_URL=http://localhost:4000/api
+```
