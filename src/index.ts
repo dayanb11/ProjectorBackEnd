@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { createApp } from './app';
 import { environment } from './infrastructure/config/environment';
 import { initializeDatabase, validateDatabaseSchema } from './infrastructure/startup/database';
-import { validatePasswordSecurity, validateEnvironmentSecurity } from './infrastructure/startup/security';
+import {  validateEnvironmentSecurity } from './infrastructure/startup/security';
 import { logger } from './infrastructure/logging/logger';
 
 async function startServer(): Promise<void> {
@@ -65,7 +65,8 @@ async function startServer(): Promise<void> {
     process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
   } catch (error) {
-    logger.error('Failed to start server', { error });
+     const err = error instanceof Error ? error : new Error(String(error));
+    logger.error('Failed to start server', { error: err.message, stack: err.stack });
     process.exit(1);
   }
 }

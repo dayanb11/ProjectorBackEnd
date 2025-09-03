@@ -48,8 +48,7 @@ export async function validateDatabaseSchema(): Promise<void> {
       'domain',
       'workers',
       'program',
-      'program_task',
-      'refresh_token'
+      'program_task'
     ];
     
     const existingTables = tables.map(t => t.table_name);
@@ -62,8 +61,12 @@ export async function validateDatabaseSchema(): Promise<void> {
     logger.info('Database schema validation completed successfully', { 
       tablesFound: existingTables.length 
     });
-  } catch (error) {
-    logger.error('Database schema validation failed', { error });
-    throw error;
+  } catch (e) {
+     const err = e instanceof Error ? e : new Error(String(e));
+   
+      logger.error('Database schema validation failed', { message: err.message, stack: err.stack });
+  throw err;
+
+   
   }
 }

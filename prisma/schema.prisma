@@ -1,387 +1,235 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
   relationMode = "foreignKeys"
 }
 
 model StatusValue {
-  status_key    String @id @db.VarChar(50) @map("status_key")
-  display_label String @db.Text @map("display_label")
-  
-  // Audit fields
-  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
-  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
-  created_by String? @db.VarChar(50) @map("created_by")
-  updated_by String? @db.VarChar(50) @map("updated_by")
-  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
-  
-  // Relations
-  programs Program[]
-  
+  status_key    String    @id @map("status_key")
+  display_label String    @map("display_label")
+  programs      Program[]
+
   @@map("status_value")
 }
 
 model StructureValue {
-  structure_key String @id @db.VarChar(50) @map("structure_key")
-  display_label String @db.Text @map("display_label")
-  
-  // Audit fields
-  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
-  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
-  created_by String? @db.VarChar(50) @map("created_by")
-  updated_by String? @db.VarChar(50) @map("updated_by")
-  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
-  
+  structure_key String @id @map("structure_key")
+  display_label String @map("display_label")
+
   @@map("structure_value")
 }
 
 model Permissions {
-  permission_key String @id @db.VarChar(50) @map("permission_key")
-  setting        String @db.Text @map("setting")
-  
-  // Audit fields
-  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
-  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
-  created_by String? @db.VarChar(50) @map("created_by")
-  updated_by String? @db.VarChar(50) @map("updated_by")
-  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
-  
+  permission_key String @id @map("permission_key")
+  setting        String @map("setting")
+
   @@map("permissions")
 }
 
 model ComplexityEstimate {
-  id               Int @id @default(autoincrement()) @map("id")
-  estimate_level_1 String? @db.Text @map("estimate_level_1")
-  estimate_level_2 String? @db.Text @map("estimate_level_2")
-  estimate_level_3 String? @db.Text @map("estimate_level_3")
-  
-  // Audit fields
-  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
-  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
-  created_by String? @db.VarChar(50) @map("created_by")
-  updated_by String? @db.VarChar(50) @map("updated_by")
-  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
-  
+  id               Int  @id @default(autoincrement()) @map("id") @db.SmallInt
+  estimate_level_1 Int? @map("estimate_level_1")
+  estimate_level_2 Int? @map("estimate_level_2")
+  estimate_level_3 Int? @map("estimate_level_3")
+
   @@map("complexity_estimate")
 }
 
 model AcceptanceOption {
-  year_key         String @id @db.VarChar(10) @map("year_key")
-  acceptance_code  AcceptanceCode @map("acceptance_code")
-  code_meaning     String @db.Text @map("code_meaning")
-  extended_meaning String @db.Text @map("extended_meaning")
-  
-  // Audit fields
-  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
-  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
-  created_by String? @db.VarChar(50) @map("created_by")
-  updated_by String? @db.VarChar(50) @map("updated_by")
-  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
-  
+  year_key         Int     @id @map("year_key")
+  acceptance_code  String  @map("acceptance_code")
+  code_meaning     String  @map("code_meaning")
+  extended_meaning String? @map("extended_meaning")
+
   @@map("acceptance_option")
 }
 
 model OrganizationalRole {
-  role_id          Int    @id @default(autoincrement()) @map("role_id")
-  role_description String @db.Text @map("role_description")
-  role_permissions String @db.Text @map("role_permissions")
-  
-  // Audit fields
-  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
-  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
-  created_by String? @db.VarChar(50) @map("created_by")
-  updated_by String? @db.VarChar(50) @map("updated_by")
-  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
-  
-  // Relations
-  workers Workers[]
-  
+  role_id          Int       @id @map("role_id")
+  role_description String    @map("role_description") @db.VarChar(100)
+  role_permissions String?   @map("role_permissions")
+  workers          Workers[]
+
   @@map("organizational_role")
 }
 
 model Division {
-  division_id   Int     @id @default(autoincrement()) @map("division_id")
-  division_name String  @db.VarChar(255) @map("division_name")
-  is_internal   Boolean @default(false) @db.Boolean @map("is_internal")
-  
-  // Audit fields
-  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
-  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
-  created_by String? @db.VarChar(50) @map("created_by")
-  updated_by String? @db.VarChar(50) @map("updated_by")
-  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
-  
-  // Relations
-  departments Department[]
-  workers     Workers[]
-  
-  @@index([division_name])
+  division_id   Int          @id @default(autoincrement()) @map("division_id")
+  division_name String       @map("division_name") @db.VarChar(200)
+  is_internal   Boolean      @map("is_internal")
+  departments   Department[]
+  workers       Workers[]
+
   @@map("division")
 }
 
 model Department {
-  department_id   Int    @id @default(autoincrement()) @map("department_id")
-  department_name String @db.VarChar(255) @map("department_name")
-  division_id     Int    @map("division_id")
-  
-  // Audit fields
-  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
-  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
-  created_by String? @db.VarChar(50) @map("created_by")
-  updated_by String? @db.VarChar(50) @map("updated_by")
-  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
-  
-  // Relations
-  division Division @relation(fields: [division_id], references: [division_id], onUpdate: Cascade, onDelete: Restrict)
-  workers  Workers[]
-  programs Program[]
-  
-  @@index([division_id])
+  department_id   Int       @id @default(autoincrement()) @map("department_id")
+  department_name String    @map("department_name") @db.VarChar(200)
+  division_id     Int?      @map("division_id")
+  division        Division? @relation(fields: [division_id], references: [division_id])
+  programs        Program[]
+  workers         Workers[]
+
+  @@index([division_id], map: "ix_department_division_id")
   @@map("department")
 }
 
 model ProcurementTeam {
-  team_id   Int    @id @default(autoincrement()) @map("team_id")
-  team_name String @db.VarChar(255) @map("team_name")
-  
-  // Audit fields
-  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
-  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
-  created_by String? @db.VarChar(50) @map("created_by")
-  updated_by String? @db.VarChar(50) @map("updated_by")
-  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
-  
-  // Relations
-  workers Workers[]
-  
+  team_id   Int       @id @default(autoincrement()) @map("team_id")
+  team_name String    @map("team_name") @db.VarChar(200)
+  workers   Workers[]
+
   @@map("procurement_team")
 }
 
 model ActivityPool {
-  activity_id   Int    @id @default(autoincrement()) @map("activity_id")
-  activity_name String @db.VarChar(255) @map("activity_name")
-  activity_aids String @db.Text @map("activity_aids")
-  
-  // Audit fields
-  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
-  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
-  created_by String? @db.VarChar(50) @map("created_by")
-  updated_by String? @db.VarChar(50) @map("updated_by")
-  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
-  
-  // Relations
+  activity_id               Int                     @id @default(autoincrement()) @map("activity_id")
+  activity_name             String                  @map("activity_name") @db.VarChar(50)
+  activity_aids             String?                 @map("activity_aids")
   engagement_type_processes EngagementTypeProcess[]
   program_tasks             ProgramTask[]
-  
+
   @@map("activity_pool")
 }
 
 model EngagementType {
-  engagement_type_id   Int    @id @default(autoincrement()) @map("engagement_type_id")
-  engagement_type_name String @db.VarChar(255) @map("engagement_type_name")
-  
-  // Audit fields
-  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
-  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
-  created_by String? @db.VarChar(50) @map("created_by")
-  updated_by String? @db.VarChar(50) @map("updated_by")
-  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
-  
-  // Relations
+  engagement_type_id        Int                     @id @default(autoincrement()) @map("engagement_type_id")
+  engagement_type_name      String                  @map("engagement_type_name") @db.VarChar(50)
   engagement_type_processes EngagementTypeProcess[]
   programs                  Program[]
-  
+
   @@map("engagement_type")
 }
 
 model EngagementTypeProcess {
-  engagement_type_id Int @map("engagement_type_id")
-  station_id         Int @db.SmallInt @map("station_id")
-  activity_id        Int @map("activity_id")
-  
-  // Audit fields
-  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
-  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
-  created_by String? @db.VarChar(50) @map("created_by")
-  updated_by String? @db.VarChar(50) @map("updated_by")
-  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
-  
-  // Relations
-  engagement_type EngagementType @relation(fields: [engagement_type_id], references: [engagement_type_id], onUpdate: Cascade, onDelete: Restrict)
-  activity        ActivityPool   @relation(fields: [activity_id], references: [activity_id], onUpdate: Cascade, onDelete: Restrict)
-  
+  engagement_type_id Int            @map("engagement_type_id")
+  station_id         Int            @map("station_id")
+  activity_id        Int            @map("activity_id")
+  activity           ActivityPool   @relation(fields: [activity_id], references: [activity_id])
+  engagement_type    EngagementType @relation(fields: [engagement_type_id], references: [engagement_type_id], onDelete: Cascade)
+
   @@id([engagement_type_id, station_id])
-  @@index([engagement_type_id])
-  @@index([activity_id])
   @@map("engagement_type_process")
 }
 
 model Domain {
-  domain_id   Int    @id @default(autoincrement()) @map("domain_id")
-  domain_name String @db.VarChar(255) @map("domain_name")
-  
-  // Audit fields
-  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
-  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
-  created_by String? @db.VarChar(50) @map("created_by")
-  updated_by String? @db.VarChar(50) @map("updated_by")
-  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
-  
-  // Relations
-  programs Program[]
-  
+  domain_id   Int       @id @default(autoincrement()) @map("domain_id")
+  domain_name String    @map("domain_name") @db.VarChar(200)
+  programs    Program[]
+
   @@map("domain")
 }
 
 model Workers {
-  worker_id            Int     @id @default(autoincrement()) @map("worker_id")
-  employee_id          String  @unique @db.VarChar(50) @map("employee_id")
-  full_name            String  @db.VarChar(255) @map("full_name")
-  job_description      String  @db.Text @map("job_description")
-  division_id          Int     @map("division_id")
-  department_id        Int     @map("department_id")
-  team_id              Int     @map("team_id")
-  role_id              Int     @map("role_id")
-  password_hash        String  @db.Text @map("password_hash")
-  available_work_days  Int     @default(5) @db.SmallInt @map("available_work_days")
-  email                String  @db.VarChar(255) @map("email")
-  
-  // Audit fields
-  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
-  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
-  created_by String? @db.VarChar(50) @map("created_by")
-  updated_by String? @db.VarChar(50) @map("updated_by")
-  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
-  
-  // Relations
-  division         Division        @relation(fields: [division_id], references: [division_id], onUpdate: Cascade, onDelete: Restrict)
-  department       Department      @relation(fields: [department_id], references: [department_id], onUpdate: Cascade, onDelete: Restrict)
-  team             ProcurementTeam @relation(fields: [team_id], references: [team_id], onUpdate: Cascade, onDelete: Restrict)
-  role             OrganizationalRole @relation(fields: [role_id], references: [role_id], onUpdate: Cascade, onDelete: Restrict)
-  
-  requested_programs Program[] @relation("RequesterWorker")
-  assigned_programs  Program[] @relation("AssigneeWorker")
-  reported_tasks     ProgramTask[]
-  refresh_tokens     RefreshToken[]
-  
-  @@index([employee_id])
-  @@index([department_id])
-  @@index([team_id])
-  @@index([role_id])
-  @@index([email])
+  worker_id           Int                @id @default(autoincrement()) @map("worker_id")
+  full_name           String             @map("full_name") @db.VarChar(200)
+  job_description     String?            @map("job_description") @db.VarChar(200)
+  division_id         Int?               @map("division_id")
+  department_id       Int?               @map("department_id")
+  team_id             Int?               @map("team_id")
+  role_id             Int                @map("role_id")
+  password_hash       String             @map("password_hash") @db.VarChar(255)
+  available_work_days String?            @map("available_work_days") @db.VarChar(50)
+  email               String?            @map("email") @db.VarChar(320)
+  assigned_programs   Program[]          @relation("AssigneeWorker")
+  requested_programs  Program[]          @relation("RequesterWorker")
+  reported_tasks      ProgramTask[]
+  department          Department?        @relation(fields: [department_id], references: [department_id])
+  division            Division?          @relation(fields: [division_id], references: [division_id])
+  role                OrganizationalRole @relation(fields: [role_id], references: [role_id])
+  team                ProcurementTeam?   @relation(fields: [team_id], references: [team_id])
+
+  @@index([department_id], map: "ix_workers_department_id")
+  @@index([division_id], map: "ix_workers_division_id")
+  @@index([role_id], map: "ix_workers_role_id")
+  @@index([team_id], map: "ix_workers_team_id")
   @@map("workers")
 }
 
 model Program {
-  program_id              Int             @id @default(autoincrement()) @map("program_id")
-  work_year               Int             @db.SmallInt @map("work_year")
-  required_quarter        String          @db.VarChar(7) @map("required_quarter")
-  title                   String          @unique @db.VarChar(500) @map("title")
-  description             String          @db.Text @map("description")
-  requester_worker_id     Int             @map("requester_worker_id")
-  department_id           Int             @map("department_id")
-  domain_id               Int             @map("domain_id")
-  estimated_amount        Decimal         @db.Decimal(18, 2) @map("estimated_amount")
-  currency                String          @db.VarChar(3) @map("currency")
-  possible_suppliers      String          @db.Text @map("possible_suppliers")
-  notes                   String?         @db.Text @map("notes")
-  planning_source         PlanningSource  @map("planning_source")
-  complexity_level        Int             @db.SmallInt @map("complexity_level")
-  engagement_type_id      Int             @map("engagement_type_id")
-  status_key              String          @db.VarChar(50) @map("status_key")
-  assignee_worker_id      Int?            @map("assignee_worker_id")
-  start_required_month    Int?            @db.SmallInt @map("start_required_month")
-  planning_comment        String?         @db.Text @map("planning_comment")
-  assignee_comment        String?         @db.Text @map("assignee_comment")
-  last_updated            DateTime        @default(now()) @db.Timestamptz(6) @map("last_updated")
-  
-  // Audit fields
-  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
-  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
-  created_by String? @db.VarChar(50) @map("created_by")
-  updated_by String? @db.VarChar(50) @map("updated_by")
-  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
-  
-  // Relations
-  requester_worker Workers        @relation("RequesterWorker", fields: [requester_worker_id], references: [worker_id], onUpdate: Cascade, onDelete: Restrict)
-  assignee_worker  Workers?       @relation("AssigneeWorker", fields: [assignee_worker_id], references: [worker_id], onUpdate: Cascade, onDelete: Restrict)
-  department       Department     @relation(fields: [department_id], references: [department_id], onUpdate: Cascade, onDelete: Restrict)
-  domain           Domain         @relation(fields: [domain_id], references: [domain_id], onUpdate: Cascade, onDelete: Restrict)
-  engagement_type  EngagementType @relation(fields: [engagement_type_id], references: [engagement_type_id], onUpdate: Cascade, onDelete: Restrict)
-  status           StatusValue    @relation(fields: [status_key], references: [status_key], onUpdate: Cascade, onDelete: Restrict)
-  
-  program_tasks ProgramTask[]
-  
-  @@index([status_key])
-  @@index([domain_id])
-  @@index([engagement_type_id])
-  @@index([department_id])
-  @@index([assignee_worker_id])
-  @@index([requester_worker_id])
+  program_id                                               Int             @id @default(autoincrement()) @map("program_id")
+  work_year                                                Int             @map("work_year")
+  required_quarter                                         String          @map("required_quarter") @db.VarChar(7)
+  title                                                    String          @unique(map: "uq_program_title") @map("title") @db.VarChar(25)
+  description                                              String?         @map("description")
+  requester_worker_id                                      Int             @map("requester_worker_id")
+  department_id                                            Int?            @map("department_id")
+  domain_id                                                Int?            @map("domain_id")
+  estimated_amount                                         Decimal?        @map("estimated_amount") @db.Decimal(18, 2)
+  currency                                                 String?         @map("currency")
+  possible_suppliers                                       String?         @map("possible_suppliers")
+  notes                                                    String?         @map("notes")
+  planning_source                                          String          @map("planning_source")
+  complexity_level                                         Int?            @map("complexity_level")
+  engagement_type_id                                       Int?            @map("engagement_type_id")
+  status_key                                               String          @map("status_key")
+  assignee_worker_id                                       Int?            @map("assignee_worker_id")
+  start_required_month                                     DateTime?       @map("start_required_month") @db.Date
+  planning_comment                                         String?         @map("planning_comment")
+  assignee_comment                                         String?         @map("assignee_comment")
+  last_updated                                             DateTime        @default(now()) @map("last_updated") @db.Timestamp(6)
+  currency_program_currencyTocurrency                      currency?       @relation("program_currencyTocurrency", fields: [currency], references: [code], onDelete: Restrict, map: "fk_program_currency")
+  planning_source_program_planning_sourceToplanning_source planning_source @relation("program_planning_sourceToplanning_source", fields: [planning_source], references: [code], map: "fk_program_planning_source")
+  assignee_worker                                          Workers?        @relation("AssigneeWorker", fields: [assignee_worker_id], references: [worker_id])
+  department                                               Department?     @relation(fields: [department_id], references: [department_id])
+  domain                                                   Domain?         @relation(fields: [domain_id], references: [domain_id])
+  engagement_type                                          EngagementType? @relation(fields: [engagement_type_id], references: [engagement_type_id])
+  requester_worker                                         Workers         @relation("RequesterWorker", fields: [requester_worker_id], references: [worker_id])
+  status                                                   StatusValue     @relation(fields: [status_key], references: [status_key])
+  program_tasks                                            ProgramTask[]
+
+  @@index([assignee_worker_id], map: "ix_program_assignee_worker_id")
+  @@index([currency], map: "ix_program_currency")
+  @@index([department_id], map: "ix_program_department_id")
+  @@index([domain_id], map: "ix_program_domain_id")
+  @@index([engagement_type_id], map: "ix_program_engagement_type_id")
+  @@index([planning_source], map: "ix_program_planning_source")
+  @@index([requester_worker_id], map: "ix_program_requester_worker_id")
+  @@index([status_key], map: "ix_program_status_key")
   @@map("program")
 }
 
 model ProgramTask {
-  program_id        Int       @map("program_id")
-  station_id        Int       @db.SmallInt @map("station_id")
-  activity_id       Int       @map("activity_id")
-  is_last_station   Boolean   @default(false) @db.Boolean @map("is_last_station")
-  completed_on      DateTime? @db.Timestamptz(6) @map("completed_on")
-  reference         String?   @db.Text @map("reference")
-  station_note      String?   @db.Text @map("station_note")
-  reporting_user_id Int       @map("reporting_user_id")
-  last_updated      DateTime  @default(now()) @db.Timestamptz(6) @map("last_updated")
-  
-  // Audit fields
-  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
-  updated_at DateTime @updatedAt @db.Timestamptz(6) @map("updated_at")
-  created_by String? @db.VarChar(50) @map("created_by")
-  updated_by String? @db.VarChar(50) @map("updated_by")
-  deleted_at DateTime? @db.Timestamptz(6) @map("deleted_at")
-  
-  // Relations
-  program         Program      @relation(fields: [program_id], references: [program_id], onUpdate: Cascade, onDelete: Restrict)
-  activity        ActivityPool @relation(fields: [activity_id], references: [activity_id], onUpdate: Cascade, onDelete: Restrict)
-  reporting_user  Workers      @relation(fields: [reporting_user_id], references: [worker_id], onUpdate: Cascade, onDelete: Restrict)
-  
+  program_id        Int          @map("program_id")
+  station_id        Int          @map("station_id")
+  activity_id       Int          @map("activity_id")
+  is_last_station   Boolean      @default(false) @map("is_last_station")
+  completed_on      DateTime?    @map("completed_on") @db.Date
+  reference         String?      @map("reference")
+  station_note      String?      @map("station_note")
+  reporting_user_id Int?         @map("reporting_user_id")
+  last_updated      DateTime     @default(now()) @map("last_updated") @db.Timestamp(6)
+  activity          ActivityPool @relation(fields: [activity_id], references: [activity_id])
+  program           Program      @relation(fields: [program_id], references: [program_id], onDelete: Cascade)
+  reporting_user    Workers?     @relation(fields: [reporting_user_id], references: [worker_id])
+
   @@id([program_id, station_id])
-  @@index([program_id])
-  @@index([activity_id])
+  @@index([activity_id], map: "ix_program_task_activity_id")
+  @@index([reporting_user_id], map: "ix_program_task_reporting_user_id")
   @@map("program_task")
 }
 
-model RefreshToken {
-  id         String   @id @default(uuid()) @map("id")
-  token_hash String   @unique @db.Text @map("token_hash")
-  worker_id  Int      @map("worker_id")
-  jti        String   @unique @db.VarChar(36) @map("jti")
-  expires_at DateTime @db.Timestamptz(6) @map("expires_at")
-  created_at DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
-  
-  // Relations
-  worker Workers @relation(fields: [worker_id], references: [worker_id], onUpdate: Cascade, onDelete: Cascade)
-  
-  @@index([worker_id])
-  @@index([expires_at])
-  @@map("refresh_token")
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model currency {
+  code                               String    @id
+  display_he                         String
+  display_en                         String
+  symbol                             String?
+  minor_unit                         Int       @default(2) @db.SmallInt
+  active                             Boolean   @default(true)
+  program_program_currencyTocurrency Program[] @relation("program_currencyTocurrency")
 }
 
-enum AcceptanceCode {
-  Plan
-  Late
-  Block
-  Finish
-}
-
-enum PlanningSource {
-  Annual
-  Unplanned
-  CarryOver
+model planning_source {
+  code                                             String    @id
+  display_he                                       String
+  display_en                                       String
+  active                                           Boolean   @default(true)
+  display_order                                    Int?
+  program_program_planning_sourceToplanning_source Program[] @relation("program_planning_sourceToplanning_source")
 }

@@ -14,9 +14,10 @@ import { logger } from './infrastructure/logging/logger';
 import { authRoutes } from './api/routes/auth.routes';
 import { workersRoutes } from './api/routes/workers.routes';
 import { programsRoutes } from './api/routes/programs.routes';
-import { lookupRoutes } from './api/routes/lookup.routes';
+// import { lookupRoutes } from './api/routes/lookup.routes';
 import { healthRoutes, readyRouter } from './api/routes/health.routes';
 import { metricsRoutes } from './api/routes/metrics.routes';
+import { lookupRoutes } from './api/routes/src/api/routes/lookup.routes';
 
 export function createApp(): express.Application {
   const app = express();
@@ -85,7 +86,7 @@ export function createApp(): express.Application {
   app.use('/api/auth', authRoutes);
   app.use('/api/workers', workersRoutes);
   app.use('/api/programs', programsRoutes);
-  app.use('/api/lookup', lookupRoutes);
+  app.use('./api/lookup', lookupRoutes);
 
   // API documentation
   if (config.NODE_ENV !== 'production') {
@@ -94,7 +95,7 @@ export function createApp(): express.Application {
   }
 
   // Root endpoint
-  app.get('/', (req, res) => {
+  app.get('/', (_req, res) => {
     res.json({
       success: true,
       data: {
@@ -108,7 +109,7 @@ export function createApp(): express.Application {
   });
 
   // 404 handler
-  app.use('*', (req, res) => {
+  app.use('*', (_req, res) => {
     res.status(404).json({
       success: false,
       error: {
