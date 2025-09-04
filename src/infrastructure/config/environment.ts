@@ -56,8 +56,8 @@ class Environment {
       REFRESH_SECRET: process.env.REFRESH_SECRET!,
       ACCESS_TOKEN_TTL: process.env.ACCESS_TOKEN_TTL || '15m',
       REFRESH_TOKEN_TTL: process.env.REFRESH_TOKEN_TTL || '7d',
-      CORS_ALLOWED_ORIGINS: process.env.CORS_ALLOWED_ORIGINS?.split(',') || ['http://localhost:5173'],
-      PUBLIC_URL: process.env.PUBLIC_URL || 'http://localhost:3000',
+      CORS_ALLOWED_ORIGINS: process.env.CORS_ALLOWED_ORIGINS?.split(',') || ['http://localhost:8080'],
+      PUBLIC_URL: process.env.PUBLIC_URL || 'http://localhost:8080',
       LOG_LEVEL: process.env.LOG_LEVEL || 'info',
     };
   }
