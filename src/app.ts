@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
+import path from 'path';
 
 import { environment } from './infrastructure/config/environment';
 import { correlationMiddleware } from './api/middleware/correlation';
@@ -28,9 +29,11 @@ export function createApp(): express.Application {
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
         imgSrc: ["'self'", "data:", "https:"],
+        connectSrc: ["'self'", "https:", "wss:"],
+        fontSrc: ["'self'", "https:", "data:"],
       },
     },
     hsts: {
@@ -94,8 +97,12 @@ export function createApp(): express.Application {
     logger.info('Swagger documentation available at /api-docs');
   }
 
+  // Serve static files from React build
+  const frontendPath = path.join(__dirname, '../frontend/build');
+  app.use(express.static(frontendPath));
+
   // Root endpoint
-  app.get('/', (_req, res) => {
+  app.get('/api', (_req, res) => {
     res.json({
       success: true,
       data: {
@@ -108,8 +115,13 @@ export function createApp(): express.Application {
     });
   });
 
+  // Serve React app for all non-API routes
+  app.get('*', (_req, res) => {
+    res.sendFile(path.join(frontendPath, 'index.html'));
+  });
+
   // 404 handler
-  app.use('*', (_req, res) => {
+  app.use('/api/*', (_req, res) => {
     res.status(404).json({
       success: false,
       error: {
